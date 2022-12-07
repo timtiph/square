@@ -26,6 +26,7 @@ class Router
         $this->initCSRF();
         $this->provisionRoutes($routes);
         $this->makeRequestContext();
+        
         try {
             [$this->controller, $this->method] = $this->urlMatching();
         } catch (\Exception) {

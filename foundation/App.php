@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tmoi\Foundation;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Symfony\Component\Routing\Generator\UrlGenerator;
 use Tmoi\Foundation\Exceptions\HttpException;
 use Tmoi\Foundation\Router\Router;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 
 class App
 {

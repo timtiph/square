@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Controllers\AuthController;
-use App\Controllers\BaseController;
 use App\Controllers\HomeController;
+use App\Controllers\BaseController;
 use Tmoi\Foundation\Router\Route;
 
 return [
@@ -13,6 +13,10 @@ return [
     // Authentification 
 
     'register.form' => Route::get('/inscription', [AuthController::class, 'registerForm']),
+    'register.request' => Route::post('/inscription', [AuthController::class, 'register']),
+    'login.form' => Route::get('/connexion', [AuthController::class, 'loginForm']),
+    'login.request' => Route::post('/connexion', [AuthController::class, 'login']),
+    'logout' => Route::post('/deconnexion', [AuthController::class, 'logout']),
 
     // Espace membre
 
