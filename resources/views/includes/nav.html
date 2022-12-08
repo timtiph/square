@@ -2,11 +2,13 @@
   <ul class="space-y-8">
     {% if auth().check() %}
     <li><a href="{{ route('home') }}" class="hover:underline">Mon compte</a></li>
-    <li><a href="posts/create.html" class="hover:underline">Créer un post</a></li>
+    {% if auth().checkIsAdmin() %}
+    <li><a href="../posts/create.html" class="hover:underline">Créer un post</a></li>
     {% endif %}
     <li>
-      <a href="" @click="event.preventDefault();document.getElementById('logout-form').submit();" class="hover:underline">Déconnexion</a>
-      <form method="POST" action="" id="logout-form" class="hidden">
+      <a href="{{ route('logout') }}" @click="event.preventDefault();document.getElementById('logout-form').submit();" class="hover:underline">Déconnexion</a>
+      <form method="POST" action="{{ route('logout') }}" id="logout-form" class="hidden">
+        {{ csrf_field()|raw }}
       </form>
     </li>
     {% else %}
