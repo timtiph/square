@@ -21,4 +21,7 @@ return [
     // Espace membre
 
     'home' => Route::get('/compte', [HomeController::class, 'index']),
+    'home.updateName' => Route::patch('/compte', [HomeController::class, 'updateName']),
+    'home.updateEmail' => Route::patch('/compte/email', [HomeController::class, 'updateEmail']),
+    'home.updatePassword' => Route::patch('/compte/password', [HomeController::class, 'updatePassword']),
 ];
