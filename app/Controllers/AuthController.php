@@ -46,7 +46,7 @@ class AuthController extends AbstractController
             'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
         ]);
 
-        Auth::authenticate($user->id);
+        Auth::authenticate($user->user_id);
         $this->redirect('home');
     }
 
@@ -73,7 +73,7 @@ class AuthController extends AbstractController
 
         if ($validator->validate() && Auth::verify($_POST['email'], $_POST['password'])) {
             $user = User::where('email', $_POST['email'])->first();
-            Auth::authenticate($user->id);
+            Auth::authenticate($user->user_id);
             $this->redirect('home');
         }
 
