@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AuthController;
 use App\Controllers\HomeController;
 use App\Controllers\BaseController;
+use App\Controllers\PostController;
 use Tmoi\Foundation\Router\Route;
 
 return [
@@ -24,4 +25,8 @@ return [
     'home.updateName' => Route::patch('/compte', [HomeController::class, 'updateName']),
     'home.updateEmail' => Route::patch('/compte/email', [HomeController::class, 'updateEmail']),
     'home.updatePassword' => Route::patch('/compte/password', [HomeController::class, 'updatePassword']),
+
+    // Blog
+    'posts.create' => Route::get('/posts/creer', [PostController::class, 'create']),
+    'posts.store' => Route::post('/posts/creer', [PostController::class, 'store']),
 ];
