@@ -4,16 +4,69 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Models\Comment;
 use App\Models\Post;
 use Tmoi\Foundation\AbstractController;
 use Tmoi\Foundation\Authentication as Auth;
 use Tmoi\Foundation\Session;
 use Cocur\Slugify\Slugify;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Tmoi\Foundation\Exceptions\HttpException;
 use Tmoi\Foundation\Validator;
 use Tmoi\Foundation\View;
 
 class PostController extends AbstractController
 {
+    public function index(): void
+    {
+        $posts = Post::orderBy('id', 'desc')->get(); /* post_id ok, recherche bonne */
+        View::render('index', [
+            'posts' => $posts,
+        ]);
+    }
+
+    public function show(string $slug): void
+    {
+        try {
+            $post = Post::withCount('comments')->where('slug', $slug)->firstOrFail();
+        } catch (ModelNotFoundException) {
+            HttpException::render();
+        }
+        View::render('posts.show', [
+            'post' => $post,
+        ]);
+    }
+
+    public function comment(string $slug): void
+    {
+        if (!Auth::check()) {
+            $this->redirect('login.form');
+        }
+
+        $post = Post::where('slug', $slug)->firstOrFail();
+
+        $validator = Validator::get($_POST);
+        $validator->mapFieldsRules([
+            'comment' => ['required', ['lengthMin', 3]],
+        ]);
+
+        if (!$validator->validate()) {
+            Session::addFlash(Session::ERRORS, $validator->errors());
+            Session::addFlash(Session::OLD, $_POST);
+            $this->redirect('posts.show', ['slug' => $slug]);
+        }
+
+        Comment::create([
+            'body' => $_POST['comment'],
+            'user_id' => Auth::id(),
+            'post_id' => $post->id,
+        ]);
+
+        Session::addFlash(Session::STATUS, 'Votre commentaire a été publié !');
+        $this->redirect('posts.show', ['slug' => $slug]);
+    }
+
+
     public function create(): void
     {
         if (!Auth::checkIsAdmin()) {
@@ -70,8 +123,56 @@ class PostController extends AbstractController
         ]);
 
         Session::addFlash(Session::STATUS, 'Votre post a été publié !');
+        $this->redirect('posts.show', ['slug' => $post->slug]);
 
-        // redirection vers posts.show
+    }
+
+    public function edit(string $slug): void
+    {
+        if (!Auth::checkIsAdmin()) {
+            $this->redirect('login.form');
+        }
+
+        try {
+            $post = Post::where('slug', $slug)->firstOrFail();
+        } catch (ModelNotFoundException) {
+            HttpException::render();
+        }
+
+        View::render('posts.edit', [
+            'post' => $post,
+        ]);
+    }
+
+    public function update(string $slug): void
+    {
+        if (!Auth::checkIsAdmin()) {
+            $this->redirect('login.form');
+        }
+
+        $post = Post::where('slug', $slug)->firstOrFail();
+
+        $validator = Validator::get($_POST);
+        $validator->mapFieldsRules([
+            'title' => ['required', ['lengthMin', 3]],
+            'post' => ['required', ['lengthMin', 3]],
+        ]);
+
+        if (!$validator->validate()) {
+            Session::addFlash(Session::ERRORS, $validator->errors());
+            Session::addFlash(Session::OLD, $_POST);
+            $this->redirect('posts.edit', ['slug' => $post->slug]);
+        }
+
+        $post->fill([
+            'title' => $_POST['title'],
+            'body' => $_POST['post'],
+            'reading_time' => ceil(str_word_count($_POST['post']) / 238),
+        ]);
+        $post->save();
+
+        Session::addFlash(Session::STATUS, 'Votre post a été mis à jour !');
+        $this->redirect('posts.show', ['slug' => $post->slug]);
 
     }
 

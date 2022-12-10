@@ -57,3 +57,11 @@ if (!function_exists('old')) {
         return View::old($key, $default);
     }
 }
+
+if (!function_exists('gravatar')) {
+    function gravatar(string $email): string
+    {
+        $gravatar = new Gravatar();
+        return $gravatar->avatar($email);
+    }
+}
