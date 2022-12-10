@@ -1,5 +1,6 @@
 <?php declare (strict_types = 1);
 
+use Gravatar\Gravatar;
 use Tmoi\Foundation\Authentication;
 use Tmoi\Foundation\Router\Router;
 use Tmoi\Foundation\Session;
